@@ -13,7 +13,8 @@
       "binding": "DB",
       "database_name": "archives-scoutes",
       // migrations_dir / migrations_table sont ajoutés par NuxtHub dans la config générée (.output/server/wrangler.json)
-      "migrations_table": "_hub_migrations","database_id": "64869b39-cf8a-45c2-8b36-9198c484918d"
+      "migrations_table": "_hub_migrations",
+      "database_id": "cb1c2abf-7e22-457f-87f8-8bfa84a32f53"
     }
   ],
   "r2_buckets": [
