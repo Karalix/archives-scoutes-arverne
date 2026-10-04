@@ -1,0 +1,28 @@
+{
+  // Configuration Cloudflare utilisée par le bouton « Deploy to Cloudflare ».
+  // La base D1 et le bucket R2 sont provisionnés automatiquement (pas d'identifiant à saisir).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "archives-scoutes-arverne",
+  "main": ".output/server/index.mjs",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": { "directory": ".output/public", "binding": "ASSETS" },
+  "observability": { "enabled": true },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "archives-scoutes",
+      // migrations_dir / migrations_table sont ajoutés par NuxtHub dans la config générée (.output/server/wrangler.json)
+      "migrations_table": "_hub_migrations","database_id": "64869b39-cf8a-45c2-8b36-9198c484918d"
+    }
+  ],
+  "r2_buckets": [
+    { "binding": "BLOB", "bucket_name": "archives-scoutes-media","preview_bucket_name": "archives-scoutes-media" }
+  ],
+  "triggers": { "crons": ["0 3 * * 1", "15 3 * * *"] },
+  "vars": {
+    "NUXT_INSTANCE_ID": "default"
+  }
+  // Secrets à définir (proposés par le formulaire de déploiement) :
+  // NUXT_SESSION_PASSWORD, NUXT_INSTALL_TOKEN, NUXT_MEDIA_SIGNING_KEY
+}

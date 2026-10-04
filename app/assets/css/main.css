@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Musée d'art moderne : blanc gallerie, noir typographique, une seule couleur d'accent (celle du groupe). */
+@theme {
+  --font-sans: "Helvetica Neue", Helvetica, "Nimbus Sans", Arial, system-ui, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+}
+
+:root {
+  --ui-radius: 0rem;
+  --ui-header-height: 4.5rem;
+  --ui-bg: #ffffff;
+  --ui-bg-muted: #f6f6f4;
+  --ui-bg-elevated: #f6f6f4;
+  --ui-bg-accented: #ececea;
+  --ui-text: #111111;
+  --ui-text-highlighted: #000000;
+  --ui-text-muted: #6b6b6b;
+  --ui-text-dimmed: #9a9a9a;
+  --ui-border: #e4e4e2;
+  --ui-border-accented: #111111;
+  --ui-primary: #111111;
+  --accent: #111111;
+  /* Couleurs sémantiques ramenées au noir : seule l'erreur garde une teinte (rouge sourd) */
+  --ui-success: #111111;
+  --ui-info: #111111;
+  --ui-warning: #111111;
+  --ui-error: #b3261e;
+}
+
+.dark {
+  --ui-bg: #0d0d0d;
+  --ui-bg-muted: #161616;
+  --ui-bg-elevated: #161616;
+  --ui-bg-accented: #1f1f1f;
+  --ui-text: #ededed;
+  --ui-text-highlighted: #ffffff;
+  --ui-text-muted: #8f8f8f;
+  --ui-text-dimmed: #5f5f5f;
+  --ui-border: #262626;
+  --ui-border-accented: #ededed;
+  --ui-primary: #ededed;
+  --ui-success: #ededed;
+  --ui-info: #ededed;
+  --ui-warning: #ededed;
+  --ui-error: #f2726a;
+}
+
+html {
+  font-feature-settings: "kern", "liga", "tnum";
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  letter-spacing: -0.005em;
+}
+
+/* Étiquettes de salle */
+.label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ui-text-muted);
+}
+
+/* Cartel (légende d'œuvre) */
+.cartel-title {
+  font-weight: 500;
+  line-height: 1.3;
+}
+.cartel-meta {
+  font-size: 0.8rem;
+  color: var(--ui-text-muted);
+}
+
+/* Focus visible renforcé (RGAA / WCAG 2.2) */
+:focus-visible {
+  outline: 2px solid var(--ui-text-highlighted);
+  outline-offset: 3px;
+}
+
+.prose-lite p { margin: 0 0 0.9rem; }
+.prose-lite a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+/* Lien souligné discret */
+.link-quiet {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--ui-border-accented);
+}
