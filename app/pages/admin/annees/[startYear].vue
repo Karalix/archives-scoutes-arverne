@@ -21,7 +21,7 @@ const description = ref('')
 watch(year, y => { description.value = y?.description ?? '' }, { immediate: true })
 const savingDesc = ref(false)
 
-async function patchYear(body: { description?: string, coverDocumentId?: string | null }) {
+async function patchYear(body: { description?: string }) {
   await $fetch(`/api/v1/years/${startYear}`, { method: 'PATCH', body })
   await refreshYears()
 }
@@ -36,15 +36,6 @@ async function saveDescription() {
   finally { savingDesc.value = false }
 }
 
-const coverOpen = ref(false)
-const coverDoc = computed(() => docs.value?.find(d => d.id === year.value?.coverDocumentId) ?? null)
-async function setCover(id: string | null) {
-  try {
-    await patchYear({ coverDocumentId: id })
-    notify.ok(id ? 'Couverture choisie' : 'Couverture retirée')
-  }
-  catch (e) { notify.fail(e) }
-}
 
 // Couverture d'un événement (A-05)
 const evCoverFor = ref<AdminEvent | null>(null)
@@ -133,7 +124,7 @@ async function refreshAll() {
     />
 
     <template v-else-if="year">
-      <div class="grid gap-4 lg:grid-cols-[2fr_1fr]">
+      <div class="grid gap-4">
         <AdminSection title="Présentation">
         <template #actions>
           <UBadge v-if="year.public" color="success" variant="outline" icon="i-lucide-globe">
@@ -151,17 +142,6 @@ async function refreshAll() {
           </div>
         </AdminSection>
 
-        <AdminSection title="Couverture">
-          <button type="button" class="block w-full overflow-hidden border border-default bg-elevated" @click="coverOpen = true">
-            <img v-if="coverDoc?.thumbUrl" :src="coverDoc.thumbUrl" alt="Couverture actuelle" class="aspect-video w-full object-cover">
-            <span v-else class="flex aspect-video items-center justify-center text-sm text-muted">
-              <UIcon name="i-lucide-image-plus" class="me-2 size-5" /> Choisir une image
-            </span>
-          </button>
-          <p class="mt-2 text-xs text-muted">
-            {{ coverDoc ? coverDoc.title : 'Sans couverture : la première vignette disponible est utilisée.' }}
-          </p>
-        </AdminSection>
       </div>
 
       <AdminSection title="Événements">
@@ -212,13 +192,6 @@ async function refreshAll() {
       </div>
     </template>
 
-    <AdminCoverPicker
-      v-model:open="coverOpen"
-      :docs="docs ?? []"
-      :model-value="year?.coverDocumentId ?? null"
-      :title="`Couverture de ${scoutYearLabel(startYear)}`"
-      @update:model-value="setCover"
-    />
 
     <AdminCoverPicker
       v-model:open="evCoverOpen"

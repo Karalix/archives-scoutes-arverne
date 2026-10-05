@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, ne, or, sql, lte } from 'drizzle-orm'
+import { and, asc, desc, eq, ne, or, sql, lte } from 'drizzle-orm'
 import type { SQL } from 'drizzle-orm'
 import type { AccessSession } from '#shared/utils/access'
 import type { AccessContext, Actor } from './auth'
@@ -109,22 +109,12 @@ export async function listYearsForFront(inst: InstanceRow, ctx: AccessContext) {
     .where(and(eq(schema.document.instanceId, inst.id), eq(schema.document.status, 'published'), ne(schema.document.visibility, 'hidden')))
     .groupBy(schema.document.yearId)
   const countMap = new Map(counts.map(c => [c.yearId, Number(c.n)]))
-  const coverIds = years.map(y => y.coverDocumentId).filter(Boolean) as string[]
-  const covers = coverIds.length ? await db.select().from(schema.document).where(inArray(schema.document.id, coverIds)) : []
-  const coverMap = new Map(covers.map(c => [c.id, c]))
 
   const out = []
   for (const y of years) {
     const count = countMap.get(y.id) ?? 0
     if (!count && !ctx.admin) continue
     const open = canViewYear(y.startYear, session, ai, now)
-    let coverUrl: string | null = null
-    if (open && y.coverDocumentId) {
-      const c = coverMap.get(y.coverDocumentId)
-      if (c?.thumbKey && canView({ yearStart: y.startYear, visibility: c.visibility, status: c.status }, session, ai, now).allowed) {
-        coverUrl = await signMediaUrl(c.id, 'thumb', { protected: !isPublicYear(y.startYear, ai, now), version: c.updatedAt })
-      }
-    }
     out.push({
       startYear: y.startYear,
       label: scoutYearLabel(y.startYear),
@@ -132,7 +122,6 @@ export async function listYearsForFront(inst: InstanceRow, ctx: AccessContext) {
       locked: !open,
       public: isPublicYear(y.startYear, ai, now),
       description: open ? y.description : '',
-      coverUrl,
     })
   }
   return out
@@ -239,19 +228,18 @@ export async function findYear(startYear: number) {
   return db.query.year.findFirst({ where: and(eq(schema.year.instanceId, instanceId()), eq(schema.year.startYear, startYear)) })
 }
 
-export async function upsertYear(actor: Actor, input: { startYear: number, description?: string, coverDocumentId?: string | null }, dryRun = false) {
+export async function upsertYear(actor: Actor, input: { startYear: number, description?: string }, dryRun = false) {
   const existing = await findYear(input.startYear)
   if (dryRun) return { action: existing ? 'update' : 'create', year: existing ?? { startYear: input.startYear } }
   const ts = Date.now()
   if (existing) {
     const patch: Partial<YearRow> = { updatedAt: ts }
     if (input.description !== undefined) patch.description = input.description
-    if (input.coverDocumentId !== undefined) patch.coverDocumentId = input.coverDocumentId
     await db.update(schema.year).set(patch).where(eq(schema.year.id, existing.id))
     await audit(actor, 'year.update', `year:${input.startYear}`, existing, patch)
     return { action: 'update', year: { ...existing, ...patch } }
   }
-  const row: YearRow = { id: newId(), instanceId: instanceId(), startYear: input.startYear, description: input.description ?? '', coverDocumentId: input.coverDocumentId ?? null, createdAt: ts, updatedAt: ts }
+  const row: YearRow = { id: newId(), instanceId: instanceId(), startYear: input.startYear, description: input.description ?? '', coverDocumentId: null, createdAt: ts, updatedAt: ts }
   await db.insert(schema.year).values(row)
   await audit(actor, 'year.create', `year:${input.startYear}`, null, row)
   return { action: 'create', year: row }

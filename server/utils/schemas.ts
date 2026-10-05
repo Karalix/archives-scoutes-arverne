@@ -11,7 +11,6 @@ export const zVariant = z.enum(['main', 'thumb', 'captions', 'original'])
 export const YearInput = z.object({
   startYear: zYear,
   description: z.string().max(4000).optional(),
-  coverDocumentId: z.string().nullable().optional(),
 })
 
 export const EventInputSchema = z.object({

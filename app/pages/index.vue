@@ -56,7 +56,7 @@ useSeoMeta({ description: () => site.value?.intro?.slice(0, 160) || `Archives de
         </h2>
         <span class="label">{{ g.years.length }}</span>
       </div>
-      <ul class="grid gap-x-8 gap-y-14 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+      <ul class="grid gap-x-8 gap-y-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
         <li v-for="y in g.years" :key="y.startYear">
           <PublicYearCard :year="y" />
         </li>
